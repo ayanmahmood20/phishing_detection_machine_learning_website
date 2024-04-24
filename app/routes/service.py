@@ -18,7 +18,9 @@ api=Blueprint('api',__name__,template_folder='/home/ayanksi183/Documents/New_fla
 @api.route('/')
 def home():
     return render_template('src.html')
-
+@api.route('/manual')
+def man():
+    return render_template('manual.html')
 @api.route('/url')
 def url():
     return render_template('index.html')
@@ -33,6 +35,7 @@ def predict():
     preprocessed_data = {key: 1 if value is True else (0 if value is False else value) for key, value in website_features.items()}
    
     df = np.array(list(preprocessed_data.values()))
+    print(df)
     # Make predictions using the loaded XGBoost model
     prediction = model.predict([df])
     proba = (model.predict_proba([df]))
@@ -47,3 +50,27 @@ def predict():
         proba_legit = round(proba[0][0]*100,2)
     
     return render_template('result.html',url=url, result=result,proba_phished=proba_phished, proba_legit=proba_legit,df=df)
+
+
+@api.route('/predict_manual', methods=['POST'])
+def manual():
+    feature=request.form['feature']
+    feature_list = [int(x) for x in feature.split(',')] 
+    with open("/home/ayanksi183/Documents/New_flask/app/routes/XGBoostClassifier.pickle.dat","rb") as f:
+        model=pickle.load(f)
+    df = np.array(feature_list)
+    prediction = model.predict([df])
+    print(prediction)
+    proba = (model.predict_proba([df]))
+    print(proba)
+    
+    if prediction == 1:
+        result = "Phished"
+        proba_phished = round(proba[0][1]*100,2)
+        proba_legit = round(proba[0][0]*100,2)
+    else:
+        result = "Legit"
+        proba_phished = round(proba[0][1]*100,2)
+        proba_legit = round(proba[0][0]*100,2)
+    
+    return render_template('result_manual.html', result=result,proba_phished=proba_phished, proba_legit=proba_legit,df=feature)

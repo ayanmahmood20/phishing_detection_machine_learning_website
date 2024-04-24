@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            background-color: #212529;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #343a40;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #ffc107;
+        }
+        p {
+            margin-bottom: 10px;
+            font-size: 18px;
+            text-align: left;
+        }
+        strong {
+            font-weight: bold;
+            color: #17a2b8;
+        }
+        
+        .pie-chart {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 20px;
+            background-color: #343a40;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .pie-chart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(#007bff var(--phished-percentage), #dc3545 var(--phished-percentage) 100%);
+            clip-path: polygon(50% 50%, 0 0, 0 100%);
+            transition: transform 0.5s ease;
+            transform-origin: bottom center;
+        }
+        .pie-chart::after {
+            content: attr(data-percentage) "%";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 18px;
+            text-align: center;
+        }
+        .container:hover .pie-chart::before {
+            transform: rotate(calc(var(--phished-percentage) * 3.6deg));
+        }
+        a {
+            color: #fff;
+            text-decoration: none;
+            background-color: #0056b3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .fadeIn {
+            animation: fadeIn 1s ease forwards;
+        }
+        .pie-chart-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .probability-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="fadeIn">
+    <div class="container">
+        <h2>Prediction Result</h2>
+        <p><strong>Features:</strong> {{ df }}</p>
+        <p><strong>Prediction:</strong> {{ result }}</p>
+        <div class="probability-container">
+            <div>
+                <p><strong>Probability (Phished):</strong></p>
+            </div>
+            <div>
+                <p><strong>Probability (Legit):</strong></p>
+            </div>
+        </div>
+        <div class="pie-chart-container">
+            <div class="pie-chart" data-percentage="{{ proba_phished }}" style="--phished-percentage: {{ proba_phished }}; background-color: #dc3545;"></div>
+            <div class="pie-chart" data-percentage="{{ proba_legit }}" style="--phished-percentage: {{ proba_legit }}; background-color: #007bff;"></div>
+        </div>
+        <br>
+        <a href="/url">Predict Again</a><br>
+        <a href="/" style="background-color: #026417;">Home</a>
+    </div>
+</body>
+</html>
